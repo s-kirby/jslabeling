@@ -16,30 +16,45 @@ const port = 3000;
 // Express App
 const app = express();
 
-// body-parser middleware
-app.use(bodyParser.urlencoded({ extended: true }))
+
 
 // Connect to mongodb
-MongoClient.connect(connectionString, {
-    useUnifiedTopology: true
-  }, (err, client) => {
-  // Simple error checking
-  if (err) return console.error(err)
-  console.log('Connected to Database')
-})
+MongoClient.connect(connectionString, { useUnifiedTopology: true })
+  .then(client => {
+    // Print success message
+    console.log('Connected to Database')
 
-// Open express app
-app.listen(port, () => {
-  console.log('Listining on port:' + port);
-})
+    // Open specified database
+    const db = client.db('jslabeling')
+    const eventCollection = db.collection('events')
 
-// Set up request and response. endpoint = '/'
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/index.html'));
-})
+    // body-parser middleware
+    app.use(bodyParser.urlencoded({ extended: true }))
 
-// Form functionality
-app.post('/quotes', (req, res) => {
-  console.log(req.body)
-})
+    // Set up request and response. endpoint = '/'
+    app.get('/', (req, res) => {
+      res.sendFile(path.join(__dirname + '/index.html'));
+    })
+
+    // Form functionality
+    app.post('/quotes', (req, res) => {
+      // Add request body to collection
+      eventCollection.insertOne(req.body)
+        .then(result => {
+          console.log(result)
+        })
+        .catch(error => console.error(error))
+    })
+
+    // Open express app
+    app.listen(port, () => {
+      console.log('Listining on port:' + port);
+    })
+
+  })
+  .catch(error => console.error(error))
+
+
+
+
 
