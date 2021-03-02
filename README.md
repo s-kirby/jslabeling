@@ -6,8 +6,6 @@ Create a simple interface to view images from a url, assign N labels using butto
 
 
 ### Using
-
-- CRUD
 - MongoDB
 - Express
 - BoxSDK
