@@ -16,6 +16,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/index.html'));
 })
 
+app.post('/quotes', (req, res) => {
+    console.log('Sticky Steve!')
+})
+
+
 // Open express app
 app.listen(port, function() {
     console.log('Listining on port:' + port);
