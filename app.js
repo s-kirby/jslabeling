@@ -11,8 +11,8 @@ const app = express();
 const hostname = '127.0.0.1';
 const port = 3000;
 
-// Set up request and response 
-app.get('/', function (req, res) {
+// Set up request and response. endpoint = '/'
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/index.html'));
 })
 
