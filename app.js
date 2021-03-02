@@ -28,11 +28,23 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
     const db = client.db('jslabeling')
     const eventCollection = db.collection('events')
 
+    // Set view engine
+    app.set('view engine', 'ejs')
+
     // body-parser middleware
     app.use(bodyParser.urlencoded({ extended: true }))
 
+
     // Set up request and response. endpoint = '/'
     app.get('/', (req, res) => {
+      // Cursor to read from mdb
+      const cursor = db.collection('events').find().toArray()
+        .then(results => {
+          console.log(results)
+        })
+        .catch(error => console.error(error))
+      
+      // Send index html
       res.sendFile(path.join(__dirname + '/index.html'));
     })
 
@@ -42,6 +54,7 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
       eventCollection.insertOne(req.body)
         .then(result => {
           console.log(result)
+          res.redirect('/')
         })
         .catch(error => console.error(error))
     })
