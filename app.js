@@ -16,7 +16,8 @@ const port = 3000;
 // Express App
 const app = express();
 
-
+// Load public JS
+app.use(express.static('public'))
 
 // Connect to mongodb
 MongoClient.connect(connectionString, { useUnifiedTopology: true })
@@ -30,22 +31,22 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
 
     // Set view engine
     app.set('view engine', 'ejs')
+    
 
     // body-parser middleware
-    app.use(bodyParser.urlencoded({ extended: true }))
-
+    app.use(bodyParser.json())
 
     // Set up request and response. endpoint = '/'
     app.get('/', (req, res) => {
       // Cursor to read from mdb
       const cursor = db.collection('events').find().toArray()
         .then(results => {
-          console.log(results)
+          // Send index as embedded javascript
+          res.render('index.ejs', {quotes: results});
         })
         .catch(error => console.error(error))
       
-      // Send index html
-      res.sendFile(path.join(__dirname + '/index.html'));
+      
     })
 
     // Form functionality
@@ -57,6 +58,40 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
           res.redirect('/')
         })
         .catch(error => console.error(error))
+    })
+
+    // Update quotes on button press
+    app.put('/quotes', (req, res) => {
+      eventCollection.findOneAndUpdate(
+        { name: 'sticky steve' }, // query
+        { // update
+          $set: {
+            name: req.body.name,
+            quote: req.body.quote
+          }
+        },
+        { // options
+          upsert: true
+        }
+      )
+      .then(result => {
+        res.json('Success')
+      })
+      .catch(error => console.error(error))
+    })
+
+    // Delete Quotes on button Press
+    app.delete('/quotes', (req, res) => {
+      eventCollection.deleteOne(
+        { name: req.body.name }
+      )
+      .then(result => {
+        if (result.deletedCount === 0) {
+          return res.json('No quote to delete')
+        }
+        res.json(`Deleted Paul's quote`)
+      })
+      .catch(error => console.error(error))
     })
 
     // Open express app
