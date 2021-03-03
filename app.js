@@ -7,46 +7,77 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const mongoose = require('mongoose');
+const BoxSDK = require('box-node-sdk');
 
 // Environment
-const connectionString = 'mongodb://127.0.0.1:27017';
+const mongoUrl = 'mongodb://127.0.0.1:27017';
 const hostname = '127.0.0.1';
 const port = 3000;
 
+
+// Set up and Authenticate BoxSDK
+const userKeys = require('./private/userKeys.js');
+const sdkConfig = require('./private/TrafficNetMongo.json');
+const sdk = BoxSDK.getPreconfiguredInstance(sdkConfig);
+//var serviceAccountClient = sdk.getAppAuthClient('enterprise');
+// Get an app user client
+var boxClient = sdk.getAppAuthClient('user', userKeys.skirby);
+
 // Express App
 const app = express();
-
-// Load public JS
 app.use(express.static('public'))
+app.set('view engine', 'ejs')
+
+
+// Testing box sdk
+boxClient.folders.get('130038818824')
+  .then(folder => {
+    console.log("Found folder. Name: " + folder.name)
+  })
+.catch(error => console.error(error))
+
 
 // Connect to mongodb
-MongoClient.connect(connectionString, { useUnifiedTopology: true })
+MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
   .then(client => {
     // Print success message
     console.log('Connected to Database')
 
     // Open specified database
-    const db = client.db('jslabeling')
-    const eventCollection = db.collection('events')
-
-    // Set view engine
-    app.set('view engine', 'ejs')
-    
+    const db = client.db('trafficNet')
+    const samples = db.collection('testingSamples')
 
     // body-parser middleware
     app.use(bodyParser.json())
 
     // Set up request and response. endpoint = '/'
     app.get('/', (req, res) => {
+
       // Cursor to read from mdb
       const cursor = db.collection('events').find().toArray()
         .then(results => {
           // Send index as embedded javascript
           res.render('index.ejs', {quotes: results});
         })
-        .catch(error => console.error(error))
+        .catch(error => console.error(error));
       
       
+    })
+
+    app.get('/label', (req, res) => {
+      // Load initial image
+      samples.findOne({'reviewed': false})
+      .then(result => {
+
+        // Get box preview from sample
+        boxClient.files.getEmbedLink(result.box_id)
+          .then(embedURL => {
+            console.log(embedURL)
+            res.render('label.ejs', {sampleURL: embedURL});
+          })
+          
+      })
+      .catch(error => console.error(error));
     })
 
     // Form functionality
@@ -94,15 +125,13 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true })
       .catch(error => console.error(error))
     })
 
-    // Open express app
-    app.listen(port, () => {
-      console.log('Listining on port:' + port);
-    })
+
 
   })
   .catch(error => console.error(error))
 
 
-
-
-
+// Open express app
+app.listen(port, () => {
+  console.log('Listining on port:' + port);
+})

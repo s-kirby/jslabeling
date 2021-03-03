@@ -1,3 +1,6 @@
 # Basic JS
 package-lock.json
 node_modules/
+
+# Hidden data
+private/

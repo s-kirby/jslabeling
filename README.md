@@ -8,4 +8,12 @@ Create a simple interface to view images from a url, assign N labels using butto
 ### Using
 - MongoDB
 - Express
-- BoxSDK
+- BoxSDK (Node)
+
+ 
+---
+
+# Tasks
+
+### Box
+1. Authenticate box in nodejs
