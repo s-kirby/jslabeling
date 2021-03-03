@@ -4,3 +4,4 @@ node_modules/
 
 # Hidden data
 private/
+image_cache/

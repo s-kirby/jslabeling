@@ -1,0 +1,17 @@
+imageTray {
+    color: red;
+    align-content: center;
+    height: 500px;
+    width: 500px;
+}
+
+iframe {
+    color: red;
+    align-content: center;
+    height: 500px;
+    width: 500px;
+}
+
+h1 {
+    color: aquamarine;
+}

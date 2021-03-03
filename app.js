@@ -1,4 +1,5 @@
 //* Built in Modules
+const fs = require('fs');
 const http = require('http');
 const path = require('path');
 
@@ -60,25 +61,43 @@ MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
           res.render('index.ejs', {quotes: results});
         })
         .catch(error => console.error(error));
-      
-      
     })
+
 
     app.get('/label', (req, res) => {
-      // Load initial image
-      samples.findOne({'reviewed': false})
-      .then(result => {
 
-        // Get box preview from sample
-        boxClient.files.getEmbedLink(result.box_id)
-          .then(embedURL => {
-            console.log(embedURL)
-            res.render('label.ejs', {sampleURL: embedURL});
-          })
-          
-      })
-      .catch(error => console.error(error));
-    })
+      // Load initial image
+      samples.findOne({'review': null})
+        .then(result => {
+
+          // Get box preview from sample
+          boxClient.files.getReadStream(result.box_id)
+            .then(stream => {
+
+              // Show Completion
+              console.log("Read Stream: " + result.box_id)
+              
+              // Save to file
+              var outPath = `${__dirname}/public/image_cache/${result.name}`;
+              console.log("Creating output under: " + outPath)
+              
+              // Pipe to created path in cache
+              let output = fs.createWriteStream(outPath);
+              let downloadStream = stream.pipe(output);
+              
+              downloadStream.on('finish', () => {
+                
+                var htmlPath = `/image_cache/${result.name}`;
+                console.log("File Saved to: " + htmlPath)
+                res.render('label.ejs', {imageSource: htmlPath});
+              })
+            
+            })
+            .catch(error => console.error(error));
+          })         
+          .catch(error => console.error(error));
+        })
+      
 
     // Form functionality
     app.post('/quotes', (req, res) => {
