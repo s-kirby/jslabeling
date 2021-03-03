@@ -12,14 +12,32 @@
     <h1 class="colortext">TrafficNet - Image Labeling System</h1>
 
     <div class="imageTray">
-      <img src="<%= imageSource%>" alt="Stickyyy"></iframe>
+      <img src="<%= imageSource%>" alt="<%= imageID%>"></iframe>
     </div>
 
+    <form action="/label" method="POST">
+      <h2>Label Options</h2>
+      
+      <!-- Car Question -->
+      <h3>Does this sample have any visible vehicles?</h3>
+      <input type="radio" name="carLabel" value="hasCars"/>Yes</br>
+      <input type="radio" name="carLabel" value="noCars"/>No</br>
+      </br>
+
+      <!-- Raining Question -->
+      <h3>Is there rain in this sample?</h3>
+      <input type="radio" name="rainLabel" value="hasRain"/>Yes</br>
+      <input type="radio" name="rainLabel" value="noRain"/>No</br>
+      </br>
+
+      <!-- Submit Sample-->
+      <button type="submit">Submit Sample</button>
+    </form>
 
 
 
-    <!-- Load Main JS -->
-    <script src="/label.js"></script>
+
+
 
   </body>
 </html>

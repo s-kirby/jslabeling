@@ -29,6 +29,9 @@ const app = express();
 app.use(express.static('public'))
 app.set('view engine', 'ejs')
 
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 
 // Testing box sdk
 boxClient.folders.get('130038818824')
@@ -49,7 +52,7 @@ MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
     const samples = db.collection('testingSamples')
 
     // body-parser middleware
-    app.use(bodyParser.json())
+
 
     // Set up request and response. endpoint = '/'
     app.get('/', (req, res) => {
@@ -85,11 +88,15 @@ MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
               let output = fs.createWriteStream(outPath);
               let downloadStream = stream.pipe(output);
               
+              // Wait for box file to download before rendering
               downloadStream.on('finish', () => {
                 
                 var htmlPath = `/image_cache/${result.name}`;
                 console.log("File Saved to: " + htmlPath)
-                res.render('label.ejs', {imageSource: htmlPath});
+                res.render('label.ejs', {
+                  imageSource: htmlPath,
+                  imageID: result.box_id
+                });
               })
             
             })
@@ -98,36 +105,34 @@ MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
           .catch(error => console.error(error));
         })
       
+    // Label input functionality
+    app.post('/label', (req, res) => {
+      // Add request body to collection
+      if (req.body.carLabel == null || req.body.carLabel == null) {
+        console.log("Empty Fields Detected.")
+      } 
+
+    })
+
 
     // Form functionality
     app.post('/quotes', (req, res) => {
       // Add request body to collection
+      console.log(req.body)
+
+      /*
       eventCollection.insertOne(req.body)
         .then(result => {
           console.log(result)
           res.redirect('/')
         })
         .catch(error => console.error(error))
+      */
     })
 
     // Update quotes on button press
     app.put('/quotes', (req, res) => {
-      eventCollection.findOneAndUpdate(
-        { name: 'sticky steve' }, // query
-        { // update
-          $set: {
-            name: req.body.name,
-            quote: req.body.quote
-          }
-        },
-        { // options
-          upsert: true
-        }
-      )
-      .then(result => {
-        res.json('Success')
-      })
-      .catch(error => console.error(error))
+      console.log(req.body)
     })
 
     // Delete Quotes on button Press
