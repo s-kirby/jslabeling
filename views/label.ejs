@@ -11,33 +11,33 @@
 
     <h1 class="colortext">TrafficNet - Image Labeling System</h1>
 
-    <div class="imageTray">
-      <img src="<%= imageSource%>" alt="<%= imageID%>"></iframe>
+    <div>
+      <img class="imageTray" src="<%= imageSource%>" alt="<%= imageID%>" id="target-sample"></img>
     </div>
 
-    <form action="/label" method="POST">
+    <form id="label-form">
       <h2>Label Options</h2>
       
       <!-- Car Question -->
       <h3>Does this sample have any visible vehicles?</h3>
-      <input type="radio" name="carLabel" value="hasCars"/>Yes</br>
-      <input type="radio" name="carLabel" value="noCars"/>No</br>
+      <input type="radio" name="car-label" value="true"/>Yes</br>
+      <input type="radio" name="car-label" value="false"/>No</br>
       </br>
 
       <!-- Raining Question -->
       <h3>Is there rain in this sample?</h3>
-      <input type="radio" name="rainLabel" value="hasRain"/>Yes</br>
-      <input type="radio" name="rainLabel" value="noRain"/>No</br>
+      <input type="radio" name="rain-label" value="true"/>Yes</br>
+      <input type="radio" name="rain-label" value="false"/>No</br>
       </br>
 
       <!-- Submit Sample-->
       <button type="submit">Submit Sample</button>
-    </form>
+    </div>
+
+    <div id="msg-space"></div>
 
 
-
-
-
+    <script src="/label.js"></script>
 
   </body>
 </html>

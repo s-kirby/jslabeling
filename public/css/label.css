@@ -1,17 +1,22 @@
+/* Set Open Sans Font*/
+@font-face {
+    font-family: 'OpenSansLight';
+    src: url('/assets/fonts/OpenSans-Light.ttf')  format('truetype');
+  }
+
 imageTray {
-    color: red;
-    align-content: center;
-    height: 500px;
-    width: 500px;
+  align-content: center;
+  width: 80%;
+  padding: 25px;
 }
 
 iframe {
-    color: red;
-    align-content: center;
-    height: 500px;
-    width: 500px;
+  color: red;
+  align-content: center;
+  height: 500px;
+  width: 500px;
 }
 
 h1 {
-    color: aquamarine;
+  font-family: 'OpenSansLight';
 }

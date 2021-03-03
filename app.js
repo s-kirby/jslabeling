@@ -107,9 +107,17 @@ MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
       
     // Label input functionality
     app.post('/label', (req, res) => {
+      
+      console.log("Got data from:", req.path, req.body)
+
+      for (k in req.body) {
+        console.log(" -", k+":", req.body[k], "isNull: ("+(req.body[k] == null)+")")
+      }
+
       // Add request body to collection
       if (req.body.carLabel == null || req.body.carLabel == null) {
-        console.log("Empty Fields Detected.")
+        
+        return res.json('Please label all fields.')
       } 
 
     })
